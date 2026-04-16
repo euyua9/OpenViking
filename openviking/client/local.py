@@ -155,6 +155,21 @@ class LocalClient(BaseClient):
         """Wait for all processing to complete."""
         return await self._service.resources.wait_processed(timeout=timeout)
 
+    async def rebuild(
+        self,
+        uri: str,
+        mode: str = "vectors_only",
+        wait: bool = True,
+        reason: str | None = None,
+    ) -> Dict[str, Any]:
+        """Rebuild semantic/vector artifacts for a URI."""
+        return await self._service.rebuild(
+            uri=uri,
+            mode=mode,
+            wait=wait,
+            reason=reason,
+        )
+
     async def build_index(self, resource_uris: Union[str, List[str]], **kwargs) -> Dict[str, Any]:
         """Manually trigger index building."""
         if isinstance(resource_uris, str):

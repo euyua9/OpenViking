@@ -381,6 +381,22 @@ impl HttpClient {
         self.post("/api/v1/content/reindex", &body).await
     }
 
+    pub async fn rebuild(
+        &self,
+        uri: &str,
+        mode: &str,
+        wait: bool,
+        reason: Option<&str>,
+    ) -> Result<serde_json::Value> {
+        let body = serde_json::json!({
+            "uri": uri,
+            "mode": mode,
+            "wait": wait,
+            "reason": reason,
+        });
+        self.post("/api/v1/content/rebuild", &body).await
+    }
+
     /// Download file as raw bytes
     pub async fn get_bytes(&self, uri: &str) -> Result<Vec<u8>> {
         let url = format!("{}/api/v1/content/download", self.base_url);

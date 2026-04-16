@@ -919,6 +919,25 @@ class AsyncHTTPClient(BaseClient):
         except Exception:
             return False
 
+    async def rebuild(
+        self,
+        uri: str,
+        mode: str = "vectors_only",
+        wait: bool = True,
+        reason: str | None = None,
+    ) -> Dict[str, Any]:
+        """Trigger rebuild for a URI."""
+        response = await self._http.post(
+            "/api/v1/content/rebuild",
+            json={
+                "uri": uri,
+                "mode": mode,
+                "wait": wait,
+                "reason": reason,
+            },
+        )
+        return self._handle_response(response)
+
     # ============= Observer (Internal) =============
 
     async def _get_queue_status(self) -> Dict[str, Any]:

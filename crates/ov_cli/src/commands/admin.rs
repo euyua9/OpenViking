@@ -112,3 +112,17 @@ pub async fn regenerate_key(
     output_success(&response, output_format, compact);
     Ok(())
 }
+
+pub async fn rebuild(
+    client: &HttpClient,
+    uri: &str,
+    mode: &str,
+    wait: bool,
+    reason: Option<&str>,
+    output_format: OutputFormat,
+    compact: bool,
+) -> Result<()> {
+    let response = client.rebuild(uri, mode, wait, reason).await?;
+    output_success(&response, output_format, compact);
+    Ok(())
+}

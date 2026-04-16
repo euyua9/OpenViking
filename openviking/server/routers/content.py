@@ -5,12 +5,16 @@
 import asyncio
 from urllib.parse import quote
 
-from fastapi import APIRouter, Body, Depends, Query
+from fastapi import APIRouter, Body, Depends, Query, Request
 from fastapi.responses import Response as FastAPIResponse
 from pydantic import BaseModel, ConfigDict
 
 from openviking.pyagfs.exceptions import AGFSClientError, AGFSNotFoundError
-from openviking.server.auth import get_request_context, require_role
+from openviking.server.auth import (
+    get_request_context,
+    require_auth_root_or_admin,
+    require_role,
+)
 from openviking.server.dependencies import get_service
 from openviking.server.identity import RequestContext, Role
 from openviking.server.models import ErrorInfo, Response
@@ -39,6 +43,13 @@ class WriteContentRequest(BaseModel):
     wait: bool = False
     timeout: float | None = None
     telemetry: TelemetryRequest = False
+
+
+class RebuildRequest(BaseModel):
+    uri: str
+    mode: str = "vectors_only"
+    wait: bool = True
+    reason: str | None = None
 
 
 router = APIRouter(prefix="/api/v1/content", tags=["content"])
@@ -244,3 +255,22 @@ async def reindex(
             "message": "Reindex is processing in the background",
         },
     )
+
+
+@router.post("/rebuild")
+@require_auth_root_or_admin
+async def rebuild(
+    body: RebuildRequest,
+    request: Request,
+    ctx: RequestContext = Depends(get_request_context),
+):
+    """Rebuild index artifacts for a URI-scoped maintenance target."""
+    service = get_service()
+    result = await service.rebuild(
+        uri=body.uri,
+        mode=body.mode,
+        wait=body.wait,
+        reason=body.reason,
+        ctx=ctx,
+    )
+    return Response(status="ok", result=result)

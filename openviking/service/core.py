@@ -372,6 +372,30 @@ class OpenVikingService:
 
         logger.info("OpenVikingService closed")
 
+    async def rebuild(
+        self,
+        *,
+        uri: str,
+        mode: str = "vectors_only",
+        wait: bool = True,
+        reason: str | None = None,
+        ctx: RequestContext | None = None,
+    ) -> dict[str, Any]:
+        """Rebuild semantic/vector artifacts for a URI."""
+        if not self._initialized:
+            await self.initialize()
+
+        effective_ctx = ctx or RequestContext(user=self.user, role=Role.ROOT)
+        from openviking.service.rebuild_executor import get_rebuild_executor
+
+        return await get_rebuild_executor().execute(
+            uri=uri,
+            mode=mode,
+            wait=wait,
+            reason=reason,
+            ctx=effective_ctx,
+        )
+
     def _ensure_initialized(self) -> None:
         """Ensure service is initialized."""
         if not self._initialized:

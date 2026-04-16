@@ -1661,14 +1661,18 @@ function bindFind() {
 }
 
 function buildAddResourcePayload() {
+  const target = elements.addResourceTarget.value.trim();
   const payload = {
-    target: elements.addResourceTarget.value.trim(),
     reason: elements.addResourceReason.value.trim(),
     instruction: elements.addResourceInstruction.value.trim(),
     wait: elements.addResourceWait.checked,
     strict: elements.addResourceStrict.checked,
     directly_upload_media: elements.addResourceUploadMedia.checked,
   };
+
+  if (target) {
+    payload.to = target;
+  }
 
   const timeoutRaw = elements.addResourceTimeout.value.trim();
   if (timeoutRaw) {

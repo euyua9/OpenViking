@@ -464,6 +464,26 @@ pub async fn handle_reindex(uri: String, regenerate: bool, wait: bool, ctx: CliC
     .await
 }
 
+pub async fn handle_rebuild(
+    uri: String,
+    mode: String,
+    wait: bool,
+    reason: Option<String>,
+    ctx: CliContext,
+) -> Result<()> {
+    let client = ctx.get_client();
+    commands::admin::rebuild(
+        &client,
+        &uri,
+        &mode,
+        wait,
+        reason.as_deref(),
+        ctx.output_format,
+        ctx.compact,
+    )
+    .await
+}
+
 pub async fn handle_get(uri: String, local_path: String, ctx: CliContext) -> Result<()> {
     let client = ctx.get_client();
     commands::content::get(&client, &uri, &local_path).await

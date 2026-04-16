@@ -62,6 +62,17 @@ class BaseClient(ABC):
         """Wait for all processing to complete."""
         ...
 
+    @abstractmethod
+    async def rebuild(
+        self,
+        uri: str,
+        mode: str = "vectors_only",
+        wait: bool = True,
+        reason: str | None = None,
+    ) -> Dict[str, Any]:
+        """Rebuild semantic/vector artifacts for a URI."""
+        ...
+
     # ============= File System =============
 
     @abstractmethod

@@ -208,6 +208,22 @@ class AsyncOpenViking:
         await self._ensure_initialized()
         return await self._client.get_task(task_id)
 
+    async def rebuild(
+        self,
+        uri: str,
+        mode: str = "vectors_only",
+        wait: bool = True,
+        reason: str | None = None,
+    ) -> Dict[str, Any]:
+        """Rebuild semantic/vector artifacts for a URI."""
+        await self._ensure_initialized()
+        return await self._client.rebuild(
+            uri=uri,
+            mode=mode,
+            wait=wait,
+            reason=reason,
+        )
+
     # ============= Resource methods =============
 
     async def add_resource(

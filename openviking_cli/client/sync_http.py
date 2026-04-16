@@ -136,6 +136,23 @@ class SyncHTTPClient:
         """Query background task status."""
         return run_async(self._async_client.get_task(task_id))
 
+    def rebuild(
+        self,
+        uri: str,
+        mode: str = "vectors_only",
+        wait: bool = True,
+        reason: str | None = None,
+    ) -> Dict[str, Any]:
+        """Trigger admin rebuild for a URI."""
+        return run_async(
+            self._async_client.rebuild(
+                uri=uri,
+                mode=mode,
+                wait=wait,
+                reason=reason,
+            )
+        )
+
     def commit_session(
         self, session_id: str, telemetry: TelemetryRequest = False
     ) -> Dict[str, Any]:

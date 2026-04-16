@@ -520,6 +520,20 @@ enum Commands {
         #[arg(long, default_value = "true")]
         wait: bool,
     },
+    /// [Admin] Rebuild semantic/vector artifacts for a URI
+    Rebuild {
+        /// Viking URI
+        uri: String,
+        /// Rebuild mode
+        #[arg(long, default_value = "vectors_only")]
+        mode: String,
+        /// Wait for rebuild to complete
+        #[arg(long, default_value_t = true, action = ArgAction::Set)]
+        wait: bool,
+        /// Optional operation reason
+        #[arg(long)]
+        reason: Option<String>,
+    },
 }
 
 #[derive(Subcommand)]
@@ -846,6 +860,12 @@ async fn main() {
             regenerate,
             wait,
         } => handlers::handle_reindex(uri, regenerate, wait, ctx).await,
+        Commands::Rebuild {
+            uri,
+            mode,
+            wait,
+            reason,
+        } => handlers::handle_rebuild(uri, mode, wait, reason, ctx).await,
         Commands::Get { uri, local_path } => handlers::handle_get(uri, local_path, ctx).await,
         Commands::Find {
             query,
@@ -970,6 +990,22 @@ mod tests {
         ]);
 
         assert!(result.is_err(), "removed write flags should not parse");
+    }
+
+    #[test]
+    fn cli_parses_rebuild_command() {
+        let result = Cli::try_parse_from([
+            "ov",
+            "rebuild",
+            "viking://resources/demo",
+            "--mode",
+            "semantic_and_vectors",
+            "--wait=false",
+            "--reason",
+            "ops-refresh",
+        ]);
+
+        assert!(result.is_ok(), "rebuild command should parse");
     }
 
     #[test]
